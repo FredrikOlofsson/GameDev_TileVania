@@ -26,11 +26,19 @@ public class PlayerMovement : MonoBehaviour
     {
         moveInput = value.Get<Vector2>();
     }
+    void OnJump()
+    {
+        print("I am jumping");
+        mrAnimator.SetTrigger("onJump");
+    }
     private void Walk()
     {
         Vector2 playerVelocity = new Vector2(moveInput.x * moveSpeed, mrRigidBody.velocity.y);
         mrRigidBody.velocity = playerVelocity;
-        print(Mathf.Abs(mrRigidBody.velocity.x));
+        walkAnimation();
+    }
+    private void walkAnimation()
+    {
         if (Mathf.Abs(mrRigidBody.velocity.x) > 0)
         {
             mrAnimator.SetBool("isWalking", true);
@@ -41,7 +49,6 @@ public class PlayerMovement : MonoBehaviour
     }
     private void flipCharacterSprite()
     {
-        print(moveInput.x);
         //if moving on the X-axis, flip the character
         if (moveInput.x < 0)
         {
