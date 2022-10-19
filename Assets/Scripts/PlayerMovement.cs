@@ -35,29 +35,10 @@ public class PlayerMovement : MonoBehaviour
     }
     void Update()
     {
-        Walk();
-        flipCharacterSprite();
-        if (mrRigidBody.velocity.y >= 0)
-        {
-            mrRigidBody.gravityScale = gravityScale;
-        } else if ((mrRigidBody.velocity.y+0.1f) < 0f)
-        {
-            mrRigidBody.gravityScale = fallingGravityScale;
-        }
-        if (mrCollider2D.IsTouchingLayers(layerMaskPlatform))
-        {
-            amountOfJumpsLeft = maxAmountJumps-1;
-        }
-        if (mrCollider2D.IsTouchingLayers(LayerMask.GetMask("Ladders")))
-        {
-            print("Touching Ladders");
-            if (moveInput.y > 0)
-            {
-                print("I should be climbing up now!");
-                mrRigidBody.velocity = new Vector2(mrRigidBody.velocity.x, moveInput.y * moveSpeed);
-            }
-        }
-        ClimbAnimation();
+        ControllGravtity(); //Double gravity when falling
+        Walk(); //Waits for player input
+        Climb(); //Only if on a ladder
+        ResetJumps(); //Only if standing on a platform
     }
     void OnMove(InputValue value)
     {
@@ -65,21 +46,29 @@ public class PlayerMovement : MonoBehaviour
     }
     void OnJump()
     {
-        if(amountOfJumpsLeft > 0)
+        if (amountOfJumpsLeft > 0)
         {
             mrAnimator.SetTrigger("onJump");
             jumpForce = Mathf.Sqrt(jumpAmountInUnityUnits * -2 * (Physics2D.gravity.y * mrRigidBody.gravityScale));
             mrRigidBody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-            amountOfJumpsLeft--;            
+            amountOfJumpsLeft--;
         } else
         {
             print("I am trying to jump but I cant, did I run out of jumps?");
-        }        
+        }
+    }
+    void ResetJumps()
+    {
+        if (mrCollider2D.IsTouchingLayers(layerMaskPlatform))
+        {
+            amountOfJumpsLeft = maxAmountJumps - 1;
+        } //Resets the jumps
     }
     private void Walk()
     {
         Vector2 playerVelocity = new Vector2(moveInput.x * moveSpeed, mrRigidBody.velocity.y);
         mrRigidBody.velocity = playerVelocity;
+        FlipCharacterSprite(); //Flips the sprite depending on player input
         WalkAnimation();
     }
     private void WalkAnimation()
@@ -94,11 +83,24 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Climb()
     {
-        print("I am climbing");
+        if (mrCollider2D.IsTouchingLayers(LayerMask.GetMask("Ladders")))
+        {
+            //mrRigidBody.gravityScale = 0;
+            if (Mathf.Abs(moveInput.y) > 0)
+            {
+                mrRigidBody.bodyType = RigidbodyType2D.Kinematic;
+                mrRigidBody.velocity = new Vector2(moveInput.x * moveSpeed, 0);
+                mrRigidBody.position = new Vector2(mrRigidBody.position.x, mrRigidBody.position.y + moveInput.y * moveSpeed * Time.deltaTime);
+            }
+        } else
+        {
+            mrRigidBody.bodyType = RigidbodyType2D.Dynamic;
+        }
+        ClimbAnimation();
     }
     private void ClimbAnimation()
     {
-        if (mrCollider2D.IsTouchingLayers(LayerMask.GetMask("Ladders")) && moveInput.y > 0)
+        if (mrCollider2D.IsTouchingLayers(LayerMask.GetMask("Ladders")) && Mathf.Abs(moveInput.y) > 0)
         {
             mrAnimator.SetBool("isClimbing", true);
         } else
@@ -107,7 +109,17 @@ public class PlayerMovement : MonoBehaviour
         }
 
     }
-    private void flipCharacterSprite()
+    private void ControllGravtity()
+    {
+        if (mrRigidBody.velocity.y >= 0.1f)
+        {
+            mrRigidBody.gravityScale = gravityScale;
+        } else if ((mrRigidBody.velocity.y) < 0.1f)
+        {
+            mrRigidBody.gravityScale = fallingGravityScale;
+        }
+    }
+    private void FlipCharacterSprite()
     {
         //if moving on the X-axis, flip the character
         if (moveInput.x < 0)
