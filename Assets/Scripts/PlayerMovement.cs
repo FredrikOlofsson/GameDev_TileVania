@@ -5,10 +5,12 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
+    Collider2D mrCollider2D;
     Rigidbody2D mrRigidBody;
     SpriteRenderer mrSpriteRenderer;
     Animator mrAnimator;
     Vector2 moveInput;
+    LayerMask layerMaskPlatform;
 
     [SerializeField] float moveSpeed = 5;
 
@@ -20,9 +22,11 @@ public class PlayerMovement : MonoBehaviour
 
     void Start()
     {
+        mrCollider2D = GetComponent<Collider2D>();
         mrRigidBody = GetComponent<Rigidbody2D>();
         mrSpriteRenderer = GetComponent<SpriteRenderer>();
         mrAnimator = GetComponent<Animator>();
+        layerMaskPlatform = LayerMask.GetMask("Platforms");
     }
     void Update()
     {        
@@ -42,9 +46,15 @@ public class PlayerMovement : MonoBehaviour
     }
     void OnJump()
     {
-        mrAnimator.SetTrigger("onJump");
-        jumpForce = Mathf.Sqrt(jumpAmountInUnityUnits * -2 * (Physics2D.gravity.y * mrRigidBody.gravityScale));
-        mrRigidBody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+        if (mrCollider2D.IsTouchingLayers(layerMaskPlatform))
+        {
+            mrAnimator.SetTrigger("onJump");
+            jumpForce = Mathf.Sqrt(jumpAmountInUnityUnits * -2 * (Physics2D.gravity.y * mrRigidBody.gravityScale));
+            mrRigidBody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+        } else
+        {
+            print("I am trying to jump but I cant because I am not on the ground!");
+        }        
     }
     private void Walk()
     {
@@ -80,3 +90,5 @@ public class PlayerMovement : MonoBehaviour
         transform.localScale = new Vector2(Mathf.Sign(mrRigidBody.velocity.x), 1f);
     }*/
 }
+
+//Question Can I have multiple branches from eachother?
