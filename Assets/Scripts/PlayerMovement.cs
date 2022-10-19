@@ -14,9 +14,12 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] float moveSpeed = 5;
 
+    [Header("Jumping Settings")]
     [SerializeField] float jumpAmountInUnityUnits = 3;
     [SerializeField] float gravityScale = 2;
     [SerializeField] float fallingGravityScale = 3;
+    [SerializeField] int maxAmountJumps = 2;
+    [SerializeField] int amountOfJumpsLeft;
     float jumpForce;
 
 
@@ -29,7 +32,8 @@ public class PlayerMovement : MonoBehaviour
         layerMaskPlatform = LayerMask.GetMask("Platforms");
     }
     void Update()
-    {        
+    {
+        print("Amount of jumps: " + amountOfJumpsLeft);
         Walk();
         flipCharacterSprite();
         if (mrRigidBody.velocity.y >= 0)
@@ -39,6 +43,10 @@ public class PlayerMovement : MonoBehaviour
         {
             mrRigidBody.gravityScale = fallingGravityScale;
         }
+        if (mrCollider2D.IsTouchingLayers(layerMaskPlatform))
+        {
+            amountOfJumpsLeft = maxAmountJumps-1;
+        }
     }
     void OnMove(InputValue value)
     {
@@ -46,14 +54,16 @@ public class PlayerMovement : MonoBehaviour
     }
     void OnJump()
     {
-        if (mrCollider2D.IsTouchingLayers(layerMaskPlatform))
+        if(amountOfJumpsLeft > 0)
         {
             mrAnimator.SetTrigger("onJump");
             jumpForce = Mathf.Sqrt(jumpAmountInUnityUnits * -2 * (Physics2D.gravity.y * mrRigidBody.gravityScale));
             mrRigidBody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+            amountOfJumpsLeft--;
+            
         } else
         {
-            print("I am trying to jump but I cant because I am not on the ground!");
+            print("I am trying to jump but I cant, did I run out of jumps?");
         }        
     }
     private void Walk()
