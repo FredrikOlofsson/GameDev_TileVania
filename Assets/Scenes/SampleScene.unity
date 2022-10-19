@@ -855,7 +855,7 @@ GameObject:
   - component: {fileID: 2049377929}
   - component: {fileID: 2049377931}
   - component: {fileID: 2049377930}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Platforms (Smart)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -17925,6 +17925,10 @@ PrefabInstance:
     - target: {fileID: 7365886700904025908, guid: 2a476f8876f81774b8f2abb68a2cf1c2, type: 3}
       propertyPath: m_Name
       value: Red (Player)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7365886700904025908, guid: 2a476f8876f81774b8f2abb68a2cf1c2, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7365886700904025911, guid: 2a476f8876f81774b8f2abb68a2cf1c2, type: 3}
       propertyPath: m_RootOrder
