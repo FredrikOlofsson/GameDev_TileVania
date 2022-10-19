@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
+
 public class PlayerMovement : MonoBehaviour
 {
     Collider2D mrCollider2D;
@@ -21,7 +23,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] int maxAmountJumps = 2;
     [SerializeField] int amountOfJumpsLeft;
     float jumpForce;
-
+    bool isClimbing;
 
     void Start()
     {
@@ -33,7 +35,6 @@ public class PlayerMovement : MonoBehaviour
     }
     void Update()
     {
-        print("Amount of jumps: " + amountOfJumpsLeft);
         Walk();
         flipCharacterSprite();
         if (mrRigidBody.velocity.y >= 0)
@@ -47,6 +48,16 @@ public class PlayerMovement : MonoBehaviour
         {
             amountOfJumpsLeft = maxAmountJumps-1;
         }
+        if (mrCollider2D.IsTouchingLayers(LayerMask.GetMask("Ladders")))
+        {
+            print("Touching Ladders");
+            if (moveInput.y > 0)
+            {
+                print("I should be climbing up now!");
+                mrRigidBody.velocity = new Vector2(mrRigidBody.velocity.x, moveInput.y * moveSpeed);
+            }
+        }
+        ClimbAnimation();
     }
     void OnMove(InputValue value)
     {
@@ -59,8 +70,7 @@ public class PlayerMovement : MonoBehaviour
             mrAnimator.SetTrigger("onJump");
             jumpForce = Mathf.Sqrt(jumpAmountInUnityUnits * -2 * (Physics2D.gravity.y * mrRigidBody.gravityScale));
             mrRigidBody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-            amountOfJumpsLeft--;
-            
+            amountOfJumpsLeft--;            
         } else
         {
             print("I am trying to jump but I cant, did I run out of jumps?");
@@ -70,9 +80,9 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector2 playerVelocity = new Vector2(moveInput.x * moveSpeed, mrRigidBody.velocity.y);
         mrRigidBody.velocity = playerVelocity;
-        walkAnimation();
+        WalkAnimation();
     }
-    private void walkAnimation()
+    private void WalkAnimation()
     {
         if (Mathf.Abs(mrRigidBody.velocity.x) > 0)
         {
@@ -81,6 +91,21 @@ public class PlayerMovement : MonoBehaviour
         {
             mrAnimator.SetBool("isWalking", false);
         }
+    }
+    private void Climb()
+    {
+        print("I am climbing");
+    }
+    private void ClimbAnimation()
+    {
+        if (mrCollider2D.IsTouchingLayers(LayerMask.GetMask("Ladders")) && moveInput.y > 0)
+        {
+            mrAnimator.SetBool("isClimbing", true);
+        } else
+        {
+            mrAnimator.SetBool("isClimbing", false);
+        }
+
     }
     private void flipCharacterSprite()
     {
