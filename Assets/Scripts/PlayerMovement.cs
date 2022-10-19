@@ -23,18 +23,15 @@ public class PlayerMovement : MonoBehaviour
         mrRigidBody = GetComponent<Rigidbody2D>();
         mrSpriteRenderer = GetComponent<SpriteRenderer>();
         mrAnimator = GetComponent<Animator>();
-        
-
     }
     void Update()
-    {
-        jumpForce = Mathf.Sqrt(jumpAmountInUnityUnits * -2 * (Physics2D.gravity.y * mrRigidBody.gravityScale));
+    {        
         Walk();
         flipCharacterSprite();
         if (mrRigidBody.velocity.y >= 0)
         {
             mrRigidBody.gravityScale = gravityScale;
-        } else if (mrRigidBody.velocity.y < 0)
+        } else if ((mrRigidBody.velocity.y+0.1f) < 0f)
         {
             mrRigidBody.gravityScale = fallingGravityScale;
         }
@@ -46,12 +43,11 @@ public class PlayerMovement : MonoBehaviour
     void OnJump()
     {
         mrAnimator.SetTrigger("onJump");
+        jumpForce = Mathf.Sqrt(jumpAmountInUnityUnits * -2 * (Physics2D.gravity.y * mrRigidBody.gravityScale));
         mrRigidBody.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-        print("I am jumping");
     }
     private void Walk()
     {
-        print("x: " + moveInput.x);
         Vector2 playerVelocity = new Vector2(moveInput.x * moveSpeed, mrRigidBody.velocity.y);
         mrRigidBody.velocity = playerVelocity;
         walkAnimation();
