@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     LayerMask layerMaskPlatform;
 
     [SerializeField] float moveSpeed = 5;
+    [SerializeField] float climbSpeed = 5;
 
     [Header("Jumping Settings")]
     [SerializeField] float jumpAmountInUnityUnits = 3;
@@ -83,35 +84,43 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Climb()
     {
+        ClimbAnimation();
         if (mrCollider2D.IsTouchingLayers(LayerMask.GetMask("Ladders")))
         {
-            //mrRigidBody.gravityScale = 0;
-            if (Mathf.Abs(moveInput.y) > 0)
+            
+            if (Mathf.Abs(moveInput.y) > 0 || isClimbing == true)
             {
-                mrRigidBody.bodyType = RigidbodyType2D.Kinematic;
-                mrRigidBody.velocity = new Vector2(moveInput.x * moveSpeed, 0);
-                mrRigidBody.position = new Vector2(mrRigidBody.position.x, mrRigidBody.position.y + moveInput.y * moveSpeed * Time.deltaTime);
+                isClimbing = true;
+                mrRigidBody.gravityScale = 0;
+                mrRigidBody.velocity = new Vector2(mrRigidBody.velocity.x, moveInput.y * climbSpeed);
             }
         } else
         {
-            mrRigidBody.bodyType = RigidbodyType2D.Dynamic;
+            isClimbing = false;
         }
-        ClimbAnimation();
     }
     private void ClimbAnimation()
     {
-        if (mrCollider2D.IsTouchingLayers(LayerMask.GetMask("Ladders")) && Mathf.Abs(moveInput.y) > 0)
+        if (mrCollider2D.IsTouchingLayers(LayerMask.GetMask("Ladders")) && isClimbing)
         {
-            mrAnimator.SetBool("isClimbing", true);
+            if (Mathf.Abs(mrRigidBody.velocity.y) > Mathf.Epsilon) //Animation stops when the player is standing still on the ladder
+            {
+                mrAnimator.enabled = true;
+                mrAnimator.SetBool("isClimbing", true);
+            } else
+            {
+                mrAnimator.enabled = false;
+            }
         } else
         {
+            mrAnimator.enabled = true;
             mrAnimator.SetBool("isClimbing", false);
         }
-
     }
     private void ControllGravtity()
     {
-        if (mrRigidBody.velocity.y >= 0.1f)
+        print("mrRigidBody.velocity.y : " + mrRigidBody.velocity.y);
+        if (mrRigidBody.velocity.y >= 1.1f) //To not activate while climbing
         {
             mrRigidBody.gravityScale = gravityScale;
         } else if ((mrRigidBody.velocity.y) < 0.1f)
