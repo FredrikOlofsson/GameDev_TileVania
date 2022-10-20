@@ -8,6 +8,7 @@ using UnityEngine.InputSystem.Controls;
 public class PlayerMovement : MonoBehaviour
 {
     Collider2D mrCollider2D;
+    BoxCollider2D feetCollider2D;
     Rigidbody2D mrRigidBody;
     SpriteRenderer mrSpriteRenderer;
     Animator mrAnimator;
@@ -29,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         mrCollider2D = GetComponent<Collider2D>();
+        feetCollider2D = GetComponent<BoxCollider2D>();
         mrRigidBody = GetComponent<Rigidbody2D>();
         mrSpriteRenderer = GetComponent<SpriteRenderer>();
         mrAnimator = GetComponent<Animator>();
@@ -60,7 +62,7 @@ public class PlayerMovement : MonoBehaviour
     }
     void ResetJumps()
     {
-        if (mrCollider2D.IsTouchingLayers(layerMaskPlatform))
+        if (feetCollider2D.IsTouchingLayers(layerMaskPlatform))
         {
             amountOfJumpsLeft = maxAmountJumps - 1;
         } //Resets the jumps

@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7365886700904025907}
   - component: {fileID: 7365886700904025906}
   - component: {fileID: 7365886700904025916}
+  - component: {fileID: 2044999588584080778}
   m_Layer: 0
   m_Name: Red (Player)
   m_TagString: Player
@@ -173,9 +174,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+  climbSpeed: 5
   jumpAmountInUnityUnits: 3
   gravityScale: 2
   fallingGravityScale: 3
+  maxAmountJumps: 2
+  amountOfJumpsLeft: 0
 --- !u!70 &7365886700904025916
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -189,6 +193,32 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.016153574, y: -0.15575108}
-  m_Size: {x: 0.45077085, y: 0.68849784}
+  m_Offset: {x: -0.016153574, y: -0.13116297}
+  m_Size: {x: 0.45077085, y: 0.6393216}
   m_Direction: 0
+--- !u!61 &2044999588584080778
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7365886700904025908}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 6200000, guid: fb1413ae50051384e9753feda2366daf, type: 2}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.017662048, y: -0.45138907}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 0.3500309, y: 0.09722185}
+  m_EdgeRadius: 0
